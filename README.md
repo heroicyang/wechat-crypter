@@ -14,7 +14,7 @@ token := "RMNlACHlV5ThzfRlVS4D4"
 corpID := "wx5823bf96d3bd56c7"
 encodingAESKey := "jWmYm7qr5nMoAUwZRjGtBxmz3KA1tkAj3ykkR6q2B2C"
 
-wechatMsgCrypt, _ := crypto.NewWechatCrypto(token, encodingAESKey, corpID)
+wechatMsgCrypt, _ := crypto.NewWechatCrypt(token, encodingAESKey, corpID)
 message, corpID, err := wechatMsgCrypt.Decrypt("msgEncrypt")
 ```
 

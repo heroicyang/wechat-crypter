@@ -23,12 +23,12 @@ type WechatMsgCrypt struct {
 	iv    []byte
 }
 
-// NewWechatCrypto 方法用于创建 WechatMsgCrypt 实例
+// NewWechatCrypt 方法用于创建 WechatMsgCrypt 实例
 //
 // token 为开发者在微信开放平台上设置的 Token，
 // encodingAESKey 为开发者在微信开放平台上设置的 EncodingAESKey，
 // appID 为企业号的 CorpId 或者 AppId
-func NewWechatCrypto(token, encodingAESKey, appID string) (WechatMsgCrypt, error) {
+func NewWechatCrypt(token, encodingAESKey, appID string) (WechatMsgCrypt, error) {
 	var key []byte
 	var err error
 
