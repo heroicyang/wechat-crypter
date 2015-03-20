@@ -24,8 +24,9 @@ type WechatMsgCrypt struct {
 }
 
 // NewWechatCrypto 方法用于创建 WechatMsgCrypt 实例
-// token 为开发者在微信开放平台上设置的 Token
-// encodingAESKey 为开发者在微信开放平台上设置的 EncodingAESKey
+//
+// token 为开发者在微信开放平台上设置的 Token，
+// encodingAESKey 为开发者在微信开放平台上设置的 EncodingAESKey，
 // appID 为企业号的 CorpId 或者 AppId
 func NewWechatCrypto(token, encodingAESKey, appID string) (WechatMsgCrypt, error) {
 	var key []byte
@@ -50,9 +51,6 @@ func NewWechatCrypto(token, encodingAESKey, appID string) (WechatMsgCrypt, error
 }
 
 // GetSignature 方法用于返回签名
-// timestamp 时间戳
-// nonce 随机数
-// encrypt 加密后的文本
 func (w WechatMsgCrypt) GetSignature(timestamp, nonce, encrypt string) string {
 	sl := []string{w.token, timestamp, nonce, encrypt}
 	sort.Strings(sl)
@@ -64,6 +62,8 @@ func (w WechatMsgCrypt) GetSignature(timestamp, nonce, encrypt string) string {
 }
 
 // Decrypt 方法用于对密文进行解密
+//
+// 返回解密后的消息，CropId/AppId, 或者错误信息
 func (w WechatMsgCrypt) Decrypt(text string) ([]byte, string, error) {
 	var message []byte
 	var id string
