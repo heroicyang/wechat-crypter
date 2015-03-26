@@ -1,4 +1,4 @@
-package crypto
+package crypter
 
 import (
 	"bytes"
@@ -15,34 +15,34 @@ import (
 	"strings"
 )
 
-// WechatMsgCrypt 结构体用于保存微信开放平台加解密所需的信息
-type WechatMsgCrypt struct {
+// MessageCrypter 封装了生成签名和消息加解密的方法
+type MessageCrypter struct {
 	token string
 	appID string
 	key   []byte
 	iv    []byte
 }
 
-// NewWechatCrypt 方法用于创建 WechatMsgCrypt 实例
+// NewMessageCrypter 方法用于创建 MessageCrypter 实例
 //
 // token 为开发者在微信开放平台上设置的 Token，
 // encodingAESKey 为开发者在微信开放平台上设置的 EncodingAESKey，
 // appID 为企业号的 CorpId 或者 AppId
-func NewWechatCrypt(token, encodingAESKey, appID string) (WechatMsgCrypt, error) {
+func NewMessageCrypter(token, encodingAESKey, appID string) (MessageCrypter, error) {
 	var key []byte
 	var err error
 
 	if key, err = base64.StdEncoding.DecodeString(encodingAESKey + "="); err != nil {
-		return WechatMsgCrypt{}, err
+		return MessageCrypter{}, err
 	}
 
 	if len(key) != 32 {
-		return WechatMsgCrypt{}, errors.New("encodingAESKey invalid")
+		return MessageCrypter{}, errors.New("encodingAESKey invalid")
 	}
 
 	iv := key[:16]
 
-	return WechatMsgCrypt{
+	return MessageCrypter{
 		token,
 		appID,
 		key,
@@ -51,8 +51,8 @@ func NewWechatCrypt(token, encodingAESKey, appID string) (WechatMsgCrypt, error)
 }
 
 // GetSignature 方法用于返回签名
-func (w WechatMsgCrypt) GetSignature(timestamp, nonce, encrypt string) string {
-	sl := []string{w.token, timestamp, nonce, encrypt}
+func (w MessageCrypter) GetSignature(timestamp, nonce, msgEncrypt string) string {
+	sl := []string{w.token, timestamp, nonce, msgEncrypt}
 	sort.Strings(sl)
 
 	s := sha1.New()
@@ -64,8 +64,8 @@ func (w WechatMsgCrypt) GetSignature(timestamp, nonce, encrypt string) string {
 // Decrypt 方法用于对密文进行解密
 //
 // 返回解密后的消息，CropId/AppId, 或者错误信息
-func (w WechatMsgCrypt) Decrypt(text string) ([]byte, string, error) {
-	var message []byte
+func (w MessageCrypter) Decrypt(text string) ([]byte, string, error) {
+	var msgDecrypt []byte
 	var id string
 
 	deciphered, err := base64.StdEncoding.DecodeString(text)
@@ -88,14 +88,14 @@ func (w WechatMsgCrypt) Decrypt(text string) ([]byte, string, error) {
 	var msgLen int32
 	binary.Read(buf, binary.BigEndian, &msgLen)
 
-	message = decoded[20 : 20+msgLen]
+	msgDecrypt = decoded[20 : 20+msgLen]
 	id = string(decoded[20+msgLen:])
 
-	return message, id, nil
+	return msgDecrypt, id, nil
 }
 
 // Encrypt 方法用于对明文进行加密
-func (w WechatMsgCrypt) Encrypt(text string) (string, error) {
+func (w MessageCrypter) Encrypt(text string) (string, error) {
 	message := []byte(text)
 
 	buf := new(bytes.Buffer)

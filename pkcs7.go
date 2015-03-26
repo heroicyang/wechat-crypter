@@ -1,4 +1,4 @@
-package crypto
+package crypter
 
 // PKCS7Decode 方法用于删除解密后明文的补位字符
 func PKCS7Decode(text []byte) []byte {
@@ -13,9 +13,9 @@ func PKCS7Decode(text []byte) []byte {
 
 // PKCS7Encode 方法用于对需要加密的明文进行填充补位
 func PKCS7Encode(text []byte) []byte {
-	const BLOCK_SIZE = 32
+	const BlockSize = 32
 
-	amountToPad := BLOCK_SIZE - len(text)%BLOCK_SIZE
+	amountToPad := BlockSize - len(text)%BlockSize
 
 	for i := 0; i < amountToPad; i++ {
 		text = append(text, byte(amountToPad))
